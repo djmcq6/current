@@ -1,0 +1,14 @@
+
+  
+  .col-a,
+  .col-b,
+  .row,
+  .col-c,
+  .col-d {
+    border: 1px solid #000; /* Black border */
+  }
+  
+  body {
+    margin: 0;
+  }
+  
