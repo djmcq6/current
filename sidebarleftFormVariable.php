@@ -125,7 +125,9 @@ if (isset($_GET['form'])) {
         } else {
             echo "Zig value not provided";
         }
-    } else {
+    } elseif ($formValue === 'transaction'){
+        
+ } else {
         // Display the default HTML block if 'form' has an unexpected value
         echo '<div class="col col-c text-center">
         <br>

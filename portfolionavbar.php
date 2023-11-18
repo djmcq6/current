@@ -1,3 +1,15 @@
+<?php
+$currentURL = $_SERVER['REQUEST_URI'];
+
+// Check if there are existing parameters in the URL
+if (strpos($currentURL, '?') !== false) {
+    // URL already contains parameters
+    $currentURL .= '&form=transaction';
+} else {
+    // URL doesn't have any parameters yet
+    $currentURL .= '?form=transaction';
+}
+?>
 <!-- portfolionavbar.php -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="newportfolio1.php">Portfolio</a>
@@ -11,7 +23,7 @@
         <a class="nav-link" href="controlcenter.php">Control Center</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="transaction.php">Transaction</a>
+      <a class="nav-link" href="<?php echo htmlspecialchars($currentURL); ?>">Transaction</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="run_bot.php">Run Bot</a>
