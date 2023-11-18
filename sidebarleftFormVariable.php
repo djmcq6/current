@@ -125,9 +125,16 @@ if (isset($_GET['form'])) {
         } else {
             echo "Zig value not provided";
         }
-    } elseif ($formValue === 'transaction'){
-        
- } else {
+    } elseif (isset($_GET['form']) && $_GET['form'] === 'transaction' && isset($_GET['transaction']) && $_GET['transaction'] === 'DepositAccountBank') {
+        if (isset($_GET['zig'])) {
+            $zigValue = $_GET['zig'];
+
+            $getAccountQuery = "SELECT account_name FROM accounts WHERE zig = '$zigValue'";
+            $accountResult = $conn->query($getAccountQuery);
+
+
+        }
+    } else {
         // Display the default HTML block if 'form' has an unexpected value
         echo '<div class="col col-c text-center">
         <br>
