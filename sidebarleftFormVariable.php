@@ -125,24 +125,68 @@ if (isset($_GET['form'])) {
         } else {
             echo "Zig value not provided";
         }
-    } elseif (isset($_GET['form']) && $_GET['form'] === 'transaction' && isset($_GET['transaction']) && $_GET['transaction'] === 'DepositAccountBank') {
+    } elseif ($formValue === 'transaction') {
         if (isset($_GET['zig'])) {
             $zigValue = $_GET['zig'];
-
-            $getAccountQuery = "SELECT account_name FROM accounts WHERE zig = '$zigValue'";
+    
+            // Fetch the row from the accounts table based on 'zig' value
+            $getAccountQuery = "SELECT * FROM accounts WHERE zig = '$zigValue'";
             $accountResult = $conn->query($getAccountQuery);
-
-
+    
+            if ($accountResult->num_rows > 0) {
+                $row = $accountResult->fetch_assoc();
+    
+                echo '<form action="newportfolio1.php" method="GET">'; // Start form
+                echo '<div class="container">';
+    
+                // First row for Account 1
+                echo '<div class="row">';
+                echo '<div class="col-md"><br>';
+                echo "Account 1: " . $row['account_name'];
+                echo '</div>';
+                echo '</div>';
+    
+                // Fetch options for Transaction Type from transactionaccounttype table
+                $getAccountTypeQuery = "SELECT notes_tAT FROM transactionaccounttype WHERE transactionAccountType = '{$row['transactionAccountType']}'";
+                $accountTypeResult = $conn->query($getAccountTypeQuery);
+    
+                if ($accountTypeResult->num_rows > 0) {
+                    // Second row for Transaction Type select
+                    echo '<div class="row">';
+                    echo '<div class="col-md"><br>';
+                    echo "Transaction Type: ";
+                    echo "<select name='transactionType'>"; // Assuming your form uses POST method
+    
+                    while ($typeRow = $accountTypeResult->fetch_assoc()) {
+                        // Splitting notes_tAT by ',' and creating options for select
+                        $types = explode(', ', $typeRow['notes_tAT']);
+                        foreach ($types as $type) {
+                            echo "<option value='$type'>$type</option>";
+                        }
+                    }
+    
+                    echo "</select>";
+                    echo '</div>';
+                    echo '</div>';
+    
+                    // Hidden inputs for all variables from the URL
+                    foreach ($_GET as $key => $value) {
+                        echo '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
+                    }
+    
+                    // Submit button
+                    echo '<div class="row">';
+                    echo '<div class="col-md"><br>';
+                    echo '<input type="submit" value="Submit">';
+                    echo '</div>';
+                    echo '</div>';
+                }
+    
+                echo '</div>'; // Close container
+                echo '</form>'; // Close form
+            }
         }
-    } else {
-        // Display the default HTML block if 'form' has an unexpected value
-        echo '<div class="col col-c text-center">
-        <br>
-        <a href="newportfolio1.php?form=portfolio" class="btn btn-primary">
-            New Portfolio
-        </a>
-        <br><br>';
-    }
+    }    
 } elseif (isset($_GET['portfolio'])) {
     // Check if 'portfolio' variable exists
     $portfolioValue = $_GET['portfolio'];
