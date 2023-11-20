@@ -128,35 +128,35 @@ if (isset($_GET['form'])) {
     } elseif ($formValue === 'transaction') {
         if (isset($_GET['zig'])) {
             $zigValue = $_GET['zig'];
-        
+
             // Fetch the row from the accounts table based on 'zig' value
             $getAccountQuery = "SELECT * FROM accounts WHERE zig = '$zigValue'";
             $accountResult = $conn->query($getAccountQuery);
-        
+
             if ($accountResult->num_rows > 0) {
                 $row = $accountResult->fetch_assoc();
-        
+
                 echo '<form action="newportfolio1.php" method="GET">'; // Start form
                 echo '<div class="container">';
-        
+
                 // First row for Account 1
                 echo '<div class="row">';
                 echo '<div class="col-md"><br>';
                 echo "Account 1: " . $row['account_name'];
                 echo '</div>';
                 echo '</div>';
-        
+
                 // Fetch options for Transaction Type from transactionaccounttype table
                 $getAccountTypeQuery = "SELECT notes_tAT FROM transactionaccounttype WHERE transactionAccountType = '{$row['transactionAccountType']}'";
                 $accountTypeResult = $conn->query($getAccountTypeQuery);
-        
+
                 if ($accountTypeResult->num_rows > 0) {
                     // Second row for Transaction Type select
                     echo '<div class="row">';
                     echo '<div class="col-md"><br>';
                     echo "Transaction Type: ";
                     echo "<select name='form'>"; // Changed the name attribute to 'form'
-        
+
                     while ($typeRow = $accountTypeResult->fetch_assoc()) {
                         // Splitting notes_tAT by ',' and creating options for select
                         $types = explode(', ', $typeRow['notes_tAT']);
@@ -164,18 +164,18 @@ if (isset($_GET['form'])) {
                             echo "<option value='$type'>$type</option>";
                         }
                     }
-        
+
                     echo "</select>";
                     echo '</div>';
                     echo '</div>';
-        
+
                     // Hidden inputs for all variables from the URL except the old 'form' variable
                     foreach ($_GET as $key => $value) {
                         if ($key !== 'form') { // Exclude the old 'form' variable
                             echo '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
                         }
                     }
-        
+
                     // Submit button
                     echo '<div class="row">';
                     echo '<div class="col-md"><br>';
@@ -183,11 +183,11 @@ if (isset($_GET['form'])) {
                     echo '</div>';
                     echo '</div>';
                 }
-        
+
                 echo '</div>'; // Close container
                 echo '</form>'; // Close form
             }
-        }        
+        }
     } elseif ($formValue === 'Deposit') {
         if (isset($_GET['form']) && $_GET['form'] === 'Deposit') {
             // Your code to handle 'Deposit'
@@ -195,35 +195,60 @@ if (isset($_GET['form'])) {
                 $zigValue = $_GET['zig'];
                 $portfolioValue = $_GET['portfolio'];
                 $zigValue = mysqli_real_escape_string($conn, $zigValue); // Escape input to prevent SQL injection
-                
+
                 // Fetch the row from the accounts table based on 'zig' value
                 $getAccountQuery = "SELECT * FROM accounts WHERE zig = '$zigValue'";
                 $accountResult = $conn->query($getAccountQuery);
-                
+
+                $urlParams = ''; // Initialize an empty string to hold the URL parameters
+
+                if (isset($_GET) && count($_GET) > 0) {
+                    foreach ($_GET as $key => $value) {
+                        $urlParams .= urlencode($key) . '=' . urlencode($value) . '&'; // Concatenate parameters
+                    }
+                }
+
+                // Remove the last '&' character from the string
+                $urlParams = rtrim($urlParams, '&');
+
                 if ($accountResult) {
                     if ($accountResult->num_rows > 0) {
                         $row = $accountResult->fetch_assoc();
                         echo '<div class="container">';
                         echo '<h5>Deposit Transaction</h5>';
                         echo '<p>Account 1: ' . $row['account_name'] . '</p>';
-                        echo '<form action="your_action.php" method="post">'; // Adjust 'your_action.php' accordingly
+                        echo '<form action="insert_deposit.php?' . $urlParams . '" method="post">';
+                        echo '<input type="hidden" name="account1" value="' . urlencode($row['account_name']) . '">'; // Include Account 1 as a hidden input
+
                         echo '<div class="form-group">';
                         echo '<label for="account2">Account 2:</label>';
-                    
+
                         // Fetch account_names where zig starts with '1.1.1.2.'
-                        $getAccountsQuery = "SELECT account_name FROM accounts WHERE zig LIKE '1.1.1.2.%'";
+                        $getAccountsQuery = "SELECT * FROM accounts WHERE zig LIKE '1.1.1.2.%'";
                         $accountsResult = $conn->query($getAccountsQuery);
-                    
+
                         if ($accountsResult->num_rows > 0) {
+                            // Assuming $accountsResult contains id_acc and account_name columns
                             echo '<select name="account2" id="account2" class="form-control">';
                             while ($accountRow = $accountsResult->fetch_assoc()) {
-                                echo '<option value="' . $accountRow['account_name'] . '">' . $accountRow['account_name'] . '</option>';
+                                echo '<option value="' . $accountRow['id_acc'] . '">' . $accountRow['account_name'] . '</option>';
                             }
                             echo '</select>';
+
+                            // Adding Amount and Date input fields
+                            echo '<div class="form-group">';
+                            echo '<label for="amount">Amount:</label>';
+                            echo '<input type="number" step="0.01" name="amount" id="amount" class="form-control" required>';
+                            echo '</div>';
+
+                            echo '<div class="form-group">';
+                            echo '<label for="date">Date:</label>';
+                            echo '<input type="date" name="date" id="date" class="form-control" required>';
+                            echo '</div>';
                         } else {
                             echo 'No matching accounts found for Account 2.';
                         }
-                    
+
                         echo '</div>'; // Close form-group
                         echo '<input type="submit" value="Submit" class="btn btn-primary">';
                         echo '</form>'; // Close form
@@ -238,7 +263,7 @@ if (isset($_GET['form'])) {
                 }
             }
         }
-    }        
+    }
 } elseif (isset($_GET['portfolio'])) {
     // Check if 'portfolio' variable exists
     $portfolioValue = $_GET['portfolio'];
