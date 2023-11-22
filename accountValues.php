@@ -127,6 +127,39 @@ if ($accountType === 'Book Value' && $primaryType === 'credit') {
         echo "No rows found for the provided conditions.";
     }
 }
+
+
+
+$query = "SELECT 
+            a.*, 
+            tat.*, 
+            ac.account_type, 
+            ac.primary_type
+          FROM accounts a
+          INNER JOIN transactionaccounttype tat ON a.id_transactionAccountType = tat.id_transactionAccountType
+          INNER JOIN accounting ac ON tat.id_accounting = ac.id_accounting
+          WHERE a.zig = '$urlZig' AND a.id_portfolio = '$portfolioID'";
+
+$result = $conn->query($query);
+
+if ($result === false) {
+    echo "Error executing query: " . $conn->error;
+} else {
+    if ($result->num_rows === 0) {
+        echo "Data not found.";
+        $accountValue = 'NA';
+    } else {
+        while ($row = $result->fetch_assoc()) {
+            echo '<br>';
+            echo $row['id_accounting']; 
+            $accountValue = $row['account_name'];
+            echo $accountValue;
+        }
+    }
+}
+
+$conn->close();
+
 ?>
 
 

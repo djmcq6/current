@@ -195,10 +195,11 @@ if ($showTable) {
     } else {
         echo "Portfolio not found";
     }
-} else {
+} else {    
+    include 'accountValues1.php';
     // Query to select account_name, zig, and add the 'Value' column from 'accounts' table sorted by 'zig' ascending
     $getAccountsQuery = "SELECT * FROM accounts WHERE id_portfolio = '$idPortfolio' ORDER BY zig ASC";
-        $accountsResult = $conn->query($getAccountsQuery);
+    $accountsResult = $conn->query($getAccountsQuery);
 
     if ($accountsResult->num_rows > 0) {
         echo "<div class='col'>";
@@ -209,15 +210,21 @@ if ($showTable) {
                 <th class='text-center'>Value</th>
               </tr></thead><tbody class='text-center'>";
 
-        while ($row = $accountsResult->fetch_assoc()) {
-            $zigValue = $row['zig'];
-            $padding = strlen($zigValue) * 12.5; // Adjust the multiplier for desired padding
-
-            echo '<tr>';
-            echo '<td class="col-2" style="text-align: left; padding-left: ' . $padding . 'px;">' . $row['account_name'] . '</td>';
-            echo '<td class="col-1">Value</td>';
-            echo '</tr>';
-        }
+            while ($row = $accountsResult->fetch_assoc()) {
+                $zigValue = $row['zig'];
+                $padding = strlen($zigValue) * 12.5; // Adjust the multiplier for desired padding
+                $idAcc1 = $row['id_acc'];
+            
+                echo '<tr>';
+                echo '<td class="col-2" style="text-align: left; padding-left: ' . $padding . 'px;">' . $row['account_name'] . '</td>';
+                echo '<td class="col-1">';
+    
+                $balance = getBalanceForAccount($idAcc1, $conn); 
+                echo $balance;
+            
+                echo '</td>';
+                echo '</tr>';
+            }
 
         echo "</tbody></table></div>";
     } else {
