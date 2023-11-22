@@ -215,10 +215,7 @@ if ($showTable) {
 
             echo '<tr>';
             echo '<td class="col-2" style="text-align: left; padding-left: ' . $padding . 'px;">' . $row['account_name'] . '</td>';
-            echo '<td class="col-1">';
-                include 'accountValues.php'; // Include HTML content directly
-            echo '</td>';
-
+            echo '<td class="col-1">Value</td>';
             echo '</tr>';
         }
 

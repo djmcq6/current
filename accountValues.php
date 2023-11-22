@@ -1,7 +1,7 @@
 <?php
 include 'connection.php';
 
-$urlPortfolio = isset($_GET['portfolio']) ? $_GET['portfolio'] : '';
+$urlPortfolio = 'Personal';
 
 echo "$urlPortfolio";
 echo '<br><br>';
@@ -24,7 +24,7 @@ if($result->num_rows > 0){
     echo "No rows found for the provided portfolio.";
 }
 
-$urlZig = isset($_GET['zig']) ? $_GET['zig'] : '';
+$urlZig = '1.1.1.1.1.1.1.1.1';
 echo $urlZig;
 echo '<br><br>';
 
